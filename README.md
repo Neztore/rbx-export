@@ -54,6 +54,8 @@ If something is a script, modulescript or localscript it will save it as:
 `Class name-Script name.lua`.
 
 However, if it is something else, such as a part, it will be saved as `Item name.Class name`, and the content will be a dump of it's properties.
+If an item has children, they will be saved within a folder under the same name, minus an extension.
 
+**If you have items with the same name, you will experience unexpected behaviour.**
 ## Support
 Got questions? Feel free to open an issue, or DM me on Discord. My name is `Neztore#6998`. Alternatively, you can find me in the [Roblox API](https://discord.gg/EDXNdAT) server.
