@@ -64,7 +64,7 @@ function convertItem  (item, where) {
 async function run (location, output) {
     try {
         output = output || "Output";
-        const json = await convertFile(location);
+        const json = await loadFile(location);
         const outputDir = path.join(__dirname, output);
         // Ensure output directory exists
         if (!fs.existsSync(outputDir)) {
