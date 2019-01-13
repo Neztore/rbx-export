@@ -17,9 +17,11 @@ function loadFile(fileLoc) {
     });
 }
 // Converts JSON to directories.
-const scriptTypes = [
-        "ModuleScript", "Script", "LocalScript"
-];
+const scriptTypes = {
+        "ModuleScript": "",
+    "Script": "server",
+    "LocalScript": "client"
+};
 
 // Converts a Roblox class/item to a folder/file structure.
 function convertItem  (item, where) {
@@ -31,8 +33,10 @@ function convertItem  (item, where) {
     const className = item['$'].class;
     const itemName = item.Properties[0].string[0]['_'];
     let childPath = path.join(where, itemName);
-    if (scriptTypes.includes(className)) {
-        const fileName = path.join(where, `${itemName}-${className}.lua`);
+    if (scriptTypes[className]) {
+        const classText = scriptTypes[className] !== "" ? `.${scriptTypes[className]}` : "";
+        const fileName = path.join(where, `${itemName}${classText}.lua`);
+
         fs.writeFile(fileName, item.Properties[0].ProtectedString[0]['_'], (err) => {
             if (err) throw err;
         })
@@ -44,7 +48,7 @@ function convertItem  (item, where) {
             const fileName = path.join(where, `${itemName}.${className}`);
             for (let type of item.Properties) {
                 // Type is the property type, e.g string.
-                propertyString += `${util.inspect(type, false)}}\n\n`;
+                propertyString += `${util.inspect(type, false, null)}}\n\n`;
 
             }
             fs.writeFile(fileName, propertyString, (err) => {
