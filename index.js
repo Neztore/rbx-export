@@ -30,28 +30,31 @@ function convertItem  (item, where) {
     // Convert the item itself
     const className = item['$'].class;
     const itemName = item.Properties[0].string[0]['_'];
+    let childPath = path.join(where, itemName);
     if (scriptTypes.includes(className)) {
         const fileName = path.join(where, `${itemName}-${className}.lua`);
         fs.writeFile(fileName, item.Properties[0].ProtectedString[0]['_'], (err) => {
             if (err) throw err;
         })
     } else {
-        // It's not a script. Dump the items properties into a file.
-        let propertyString = `${className}: ${itemName}\n\n`;
-        const fileName = path.join(where, `${itemName}.${className}`);
-        for (let type of item.Properties) {
-            // Type is the property type, e.g string.
-            propertyString += `${util.inspect(type, false)}}\n\n`;
+        // Don't add a seperate file for folder
+        if (className !== "Folder") {
+            // It's not a script. Dump the items properties into a file.
+            let propertyString = `${className}: ${itemName}\n\n`;
+            const fileName = path.join(where, `${itemName}.${className}`);
+            for (let type of item.Properties) {
+                // Type is the property type, e.g string.
+                propertyString += `${util.inspect(type, false)}}\n\n`;
 
+            }
+            fs.writeFile(fileName, propertyString, (err) => {
+                if (err) throw err;
+            })
         }
-        fs.writeFile(fileName, propertyString, (err) => {
-            if (err) throw err;
-        })
     }
     // Check for any children
     if (item.Item) {
         // Create children file
-        const childPath = path.join(where, itemName);
         if (!fs.existsSync(childPath)) {
             fs.mkdirSync(path.join(childPath));
         }
