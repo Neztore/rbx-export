@@ -66,3 +66,11 @@ If an item has children, they will be saved within a folder under the same name,
 This format is an adaptable standard. Expect it to change extensively.
 ## Support
 Got questions? Feel free to open an issue, or DM me on Discord. My name is `Neztore#6998`. Alternatively, you can find me in the [Roblox API](https://discord.gg/EDXNdAT) server.
+
+
+
+-----------------
+
+
+This module won't be updated - there are many more useful (though more heavy-duty) converters available that can both ways.
+I'm personally fed up with Roblox. Are you? Check out [Teverse](https://teverse.com).
