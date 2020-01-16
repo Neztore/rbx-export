@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require("path");
 const parseString = require('xml2js').parseString;
 const util = require('util');
+const package = require("./package")
 
 // Converts the given XML file to JSON, using xml2js.
 function loadFile(fileLoc) {
@@ -32,29 +33,52 @@ function convertItem  (item, where) {
     // Convert the item itself
     const className = item['$'].class;
     const itemName = item.Properties[0].string[0]['_'];
+    const referent = item['$'].referent
     let childPath = path.join(where, itemName);
-    if (scriptTypes[className]) {
-        const classText = scriptTypes[className] !== "" ? `.${scriptTypes[className]}` : "";
-        const fileName = path.join(where, `${itemName}${classText}.lua`);
 
-        fs.writeFile(fileName, item.Properties[0].ProtectedString[0]['_'], (err) => {
-            if (err) throw err;
-        })
-    } else {
-        // Don't add a seperate file for folder
-        if (className !== "Folder") {
-            // It's not a script. Dump the items properties into a file.
-            let propertyString = `${className}: ${itemName}\n\n`;
-            const fileName = path.join(where, `${itemName}.${className}`);
-            for (let type of item.Properties) {
-                // Type is the property type, e.g string.
-                propertyString += `${util.inspect(type, false, null)}}\n\n`;
 
+    if (className !== "Folder") {
+        // Dump the items properties into a file.
+        const outProperties = {}
+        const properties = Object.keys(item.Properties[0])
+
+        for (let propType of properties) {
+            const value = item.Properties[0][propType]
+            for (let propItem of value) {
+                const name = propItem["$"].name
+                propItem["$"] = undefined
+                outProperties[name] = {
+                    _propertyType: propType,
+                    values: propItem
+                }
             }
-            fs.writeFile(fileName, propertyString, (err) => {
+
+        }
+
+        const outObject = {
+            className,
+            name: itemName,
+            referent,
+            properties: outProperties,
+            _exportInfo: `Exported with rbx-export v${package.version}. Contains all properties of this instance.`
+        }
+
+        if (scriptTypes[className]) {
+            const classText = scriptTypes[className] !== "" ? `.${scriptTypes[className]}` : "";
+            const fileName = path.join(where, `${itemName}${classText}.lua`);
+
+            fs.writeFile(fileName, item.Properties[0].ProtectedString[0]['_'], (err) => {
                 if (err) throw err;
             })
+
+            outObject.properties.ProtectedString = undefined
         }
+
+        const fileName = path.join(where, `${itemName}.${className}`);
+        const propertyString = JSON.stringify(outObject, null, 1)
+        fs.writeFile(fileName, propertyString, (err) => {
+            if (err) throw err;
+        })
     }
     // Check for any children
     if (item.Item) {

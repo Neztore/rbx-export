@@ -56,12 +56,10 @@ How scripts are saved:
 - ModuleScript - `scriptName.lua`
 - LocalScript - `scriptName.client.lua`
 
-This is akin to more heavy duty full "Project management" tools, such as Rojo or Rofresh.
+
 
 However, if it is something else, such as a part, it will be saved as `Item name.Class name`, and the content will be a dump of it's properties.
 If an item has children, they will be saved within a folder under the same name, minus an extension.
-
-**If you have items with the same name, you will experience unexpected behaviour.**
 
 This format is an adaptable standard. Expect it to change extensively.
 ## Support
