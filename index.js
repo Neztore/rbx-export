@@ -19,7 +19,7 @@ function loadFile(fileLoc) {
 }
 // Converts JSON to directories.
 const scriptTypes = {
-        "ModuleScript": "",
+    "ModuleScript": "module",
     "Script": "server",
     "LocalScript": "client"
 };
@@ -64,7 +64,10 @@ function convertItem  (item, where) {
         }
 
         if (scriptTypes[className]) {
-            const classText = scriptTypes[className] !== "" ? `.${scriptTypes[className]}` : "";
+            let classText = scriptTypes[className] !== "" ? `.${scriptTypes[className]}` : "";
+            if (scriptTypes[className] == "module"){
+                classText = ""
+            }//quick workaround to fix modulescripts(the scriptTypes[className] !== "" logic doesn't work)
             const fileName = path.join(where, `${itemName}${classText}.lua`);
 
             fs.writeFile(fileName, item.Properties[0].ProtectedString[0]['_'], (err) => {
