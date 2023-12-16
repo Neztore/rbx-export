@@ -19,7 +19,7 @@ function loadFile(fileLoc) {
 }
 // Converts JSON to directories.
 const scriptTypes = {
-        "ModuleScript": "",
+    "ModuleScript": "module",
     "Script": "server",
     "LocalScript": "client"
 };
@@ -62,23 +62,31 @@ function convertItem  (item, where) {
             properties: outProperties,
             _exportInfo: `Exported with rbx-export v${package.version}. Contains all properties of this instance.`
         }
+        let fileName = path.join(where, `${itemName}.${className}.model.json`);
+        if (className=="Model") fileName = path.join(where, `${itemName}.model.json`)
+        const propertyString = JSON.stringify(outObject, null, 1)
 
         if (scriptTypes[className]) {
-            const classText = scriptTypes[className] !== "" ? `.${scriptTypes[className]}` : "";
+            let classText = scriptTypes[className] !== "" ? `.${scriptTypes[className]}` : "";
+            if (scriptTypes[className] == "module"){
+                classText = "";
+            }
             const fileName = path.join(where, `${itemName}${classText}.lua`);
 
             fs.writeFile(fileName, item.Properties[0].ProtectedString[0]['_'], (err) => {
                 if (err) throw err;
             })
 
-            outObject.properties.ProtectedString = undefined
+            outObject.properties.ProtectedString = undefined;
+        }else{
+            
+            fs.writeFile(fileName, propertyString, (err) => {
+                if (err) throw err;
+            })
         }
 
-        const fileName = path.join(where, `${itemName}.${className}`);
-        const propertyString = JSON.stringify(outObject, null, 1)
-        fs.writeFile(fileName, propertyString, (err) => {
-            if (err) throw err;
-        })
+        
+        
     }
     // Check for any children
     if (item.Item) {
